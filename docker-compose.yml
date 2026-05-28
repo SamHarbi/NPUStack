@@ -1,0 +1,58 @@
+services:
+  lemonade:
+    image: ghcr.io/lemonade-sdk/lemonade-server:latest
+    container_name: lemonade
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "13305:13305" 
+    environment:
+      - LEMONADE_LLAMACPP=rocm      
+      - HSA_OVERRIDE_GFX_VERSION=11.0.3 
+    devices:
+      - /dev/kfd:/dev/kfd          
+      - /dev/dri:/dev/dri          
+    group_add:
+      - video                      
+      - 992 # Note this has a high chance of causing issues on other machines, check what group render is for use or just replace with 'render'
+    volumes:
+      - lemonade-models:/usr/local/share/lemonade-server/llama 
+      - ~/.cache/huggingface:/root/.cache/huggingface  
+    depends_on:
+      - fastflowlm      
+
+  fastflowlm:
+    build: 
+      context: ./fastflowlm/
+      args:
+        - BASE_IMAGE=debian:latest
+    image: fastflowlm:1.0.0
+    pull_policy: never
+    container_name: fastflowlm
+    devices:
+      - /dev/accel/accel0:/dev/accel/accel0 # specific AMD NPU node
+      - /dev/dri:/dev/dri                 
+    volumes:
+      - ./models:/app/models              
+      # - /opt/xilinx:/opt/xilinx:ro        
+    environment:
+      - FLM_SERVER_MODE=1                
+      - FLM_PORT=8000
+    ports:
+      - "8001:8000"
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main-slim
+    container_name: openwebui
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - OPENAI_API_BASE_URL=http://lemonade:8000/v1
+    depends_on:
+      - lemonade
+      - fastflowlm
+      
+
+volumes:
+  lemonade-models:
