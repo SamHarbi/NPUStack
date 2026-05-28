@@ -1,0 +1,3 @@
+[submodule "fastflowlm/external/fastflowlm"]
+	path = fastflowlm/external/fastflowlm
+	url = ../../ROCm/FastFlowLM.git

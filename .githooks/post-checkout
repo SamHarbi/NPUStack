@@ -1,0 +1,2 @@
+#!/bin/bash
+../fastflowlm/external/apply-patches.sh patches submodule || true  # Exit with success even if patch failed

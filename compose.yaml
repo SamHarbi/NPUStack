@@ -1,0 +1,140 @@
+# NPUStack — single compose entrypoint (PUB-007)
+#
+# Usage:
+#   podman compose up -d            # or: docker compose up -d
+#   podman compose --profile registry up -d   # also start the local registry
+#
+# Profiles:
+#   (default)  fastflowlm, opencode, squid
+#
+# Networking parity and secrets/env handling are tracked in PUB-010 and
+# PUB-012. The opencode service builds from ./opencode (PUB-025).
+networks:
+  cross_container:
+    driver: bridge
+    internal: true        # no direct egress for app containers
+  egress:
+    driver: bridge        # only squid joins this one, access to host through this
+
+volumes:
+    opencode_workspace:
+    fastflowlm_config:
+
+services:
+  fastflowlm:
+    image: ghcr.io/samharbi/fastflowlm-npu-stack:latest
+    restart: unless-stopped
+    stop_signal: SIGINT
+    read_only: true
+    container_name: fastflowlm
+    group_add:
+      - keep-groups
+    volumes:
+      - fastflowlm_config:/home/ubuntu/.config/flm:rw
+    tmpfs:
+      - /tmp
+    devices:
+      - "/dev/kfd:/dev/kfd"
+      - "/dev/dri:/dev/dri"
+      - "/dev/accel/accel0:/dev/accel/accel0"
+    user: "1000:1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      # Forward proxy for outbound traffic (model downloads etc.)
+      # Both cases set because different HTTP clients read different ones.
+      - HOME=/home/ubuntu
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
+      - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
+    command: >
+      sh -c "
+      whoami &&
+      flm validate &&
+      echo 'Starting FastFlowLM server...' &&
+      flm pull qwen3.8-dflash2:27b &&
+      exec flm serve --socket 20 --q-len 20 --ctx-len 262144 --host 0.0.0.0 --port 52625
+      "
+    networks:
+      - cross_container
+    expose:
+      - "52625"
+
+  opencode:
+    image: ghcr.io/samharbi/opencode-npu-stack:latest
+    container_name: opencode
+    restart: unless-stopped
+    command: serve --hostname 0.0.0.0 --port 8080
+    working_dir: /workspace
+    user: "1000:1000"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    expose:
+      - "8081"
+    env_file:
+      - ./config/secrets.env
+    environment:
+      - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1   # was host.docker.internal, see notes
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key}
+      # Forward proxy for outbound traffic (model downloads etc.)
+      # Both cases set because different HTTP clients read different ones.
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
+      - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
+    volumes:
+      - opencode_workspace:/workspace:rw
+      - ./config/opencode.json:/workspace/.config/opencode/opencode.json
+      - ./data/opencode-share:/root/.local/share/opencode:rw
+    networks:
+      - cross_container
+
+  squid:
+    image: ubuntu/squid:latest
+    container_name: squid
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=128m
+      - /var/log/squid:rw,noexec,nosuid,size=128m
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "${HTTP_PORT:-8080}:3080"       # reverse-proxy listener only
+    volumes:
+      - ./config/squid.conf:/etc/squid/squid.conf:ro
+    networks:
+      - cross_container   # talks to apps, serves fastflowlm's proxy requests
+      - egress            # outbound internet access
+
+    # mcp-git:
+    #   build:
+    #     context: ./mcp-server-git/
+    #   container_name: mcp-server-git
+    #   env_file:
+    #   - ./config/secrets.env
+    #   ports:
+    #     - "8082:8082"
+    #   volumes:
+    #     - opencode_workspace:/workspace:rw
+    #   restart: unless-stopped
