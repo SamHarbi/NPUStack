@@ -6,3 +6,41 @@ This repo is focused on a Linux based environment as this is what I use on my de
 Distro: Debian (trixie) with Linux Kernal 7.0.4. Installed via backports. Otherwise we don't have the ```amdxdna``` driver which was introduced in the kernal starting v7.
 
 Otherwise, this project deploys everything as a container. I use podman, docker works just as well.
+
+## Deploy Instructions (WIP)
+
+podman build -t fastflowlm .
+
+podman compose up (Starts docker server)
+
+podman tag fastflowlm:latest localhost:5000/fastflowlm:latest
+
+podman push --tls-verify=false localhost:5000/fastflowlm:latest
+
+sudo -E /home/sam/.nix-profile/bin/podman run -it --device /dev/kfd --device /dev/dri --device=/dev/accel/accel0 --group-add keep-groups --tls-verify=false --ulimit memlock=-1:-1 localhost:5000/fastflowlm
+
+RUN chmod +x ./src/fastflowlm/fastflowlm-build.sh && ./src/fastflowlm/fastflowlm-build.sh
+
+flm run qwen3:0.6b
+
+sudo -E /nix/var/nix/profiles/default/bin/nix develop && podman compose up
+
+sudo setfacl -R -m u:server:rwx /models
+
+
+# User
+Create a new server user to run containers. This is to isolate any host variables and behaviours, currently that is soft and hard ulimits.
+```
+sudo adduser server
+sudo usermod -a -G render,video server
+```
+
+# Latest NPU firmware on Debian (2026/06)
+### 1. Ensure the target directory exists
+sudo mkdir -p /lib/firmware/amdnpu/17f0_10
+
+### 2. Download the required modern NPU firmware directly from upstream git
+sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/amdnpu/17f0_10/npu.sbin.1.1.2.64 -O /lib/firmware/amdnpu/17f0_10/npu_7.sbin
+
+### 3. Create a fallback symlink just in case your package variations check for it
+sudo ln -sf npu_7.sbin /lib/firmware/amdnpu/17f0_10/npu.sbin

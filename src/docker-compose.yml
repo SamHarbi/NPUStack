@@ -1,0 +1,57 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ../ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  fastflowlm:
+    image: localhost:5000/fastflowlm
+    build: 
+      context: ./fastflowlm/
+    container_name: fastflowlm
+    user: "0:0" 
+    privileged: true
+    group_add:
+      - keep-groups
+    environment:
+      - MODEL_1=gemma3:1b
+    volumes:
+      - ../models:/root/.config/flm    
+    devices:
+      - "/dev/kfd:/dev/kfd"
+      - "/dev/dri:/dev/dri"
+      - "/dev/accel/accel0:/dev/accel/accel0"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "52625:52625"
+    command: >
+      sh -c "
+      whoami &&
+      ls -ld /workspace &&
+      echo 'Checking and downloading models...' &&
+      flm pull $$MODEL_1 &&
+      echo 'All models ready! Starting FastFlowLM server...' &&
+      exec flm serve --host 0.0.0.0 --port 52625
+      "
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main-slim
+    container_name: open-webui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../open_webui_data:/app/backend/data
+    environment:
+      # Point WebUI to FLM's OpenAI-compatible server
+      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
+      - OPENAI_API_KEY=dummy-key
+    restart: unless-stopped
+    depends_on:
+      - fastflowlm
