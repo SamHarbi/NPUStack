@@ -1,0 +1,1 @@
+(cd ./src && sudo -E /nix/var/nix/profiles/default/bin/nix develop)
