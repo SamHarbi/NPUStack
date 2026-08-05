@@ -14,6 +14,14 @@ sudo adduser server
 sudo usermod -a -G render,video server
 ```
 
+Add registry config to allow pushing and pulling from local registry
+```
+[[registry]]
+location = "localhost:5000"
+insecure = true
+
+```
+
 ## Latest NPU firmware on Debian (2026/06)
 ### 1. Ensure the target directory exists
 sudo mkdir -p /lib/firmware/amdnpu/17f0_10

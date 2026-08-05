@@ -10,6 +10,7 @@ services:
 
   fastflowlm:
     image: localhost:5000/fastflowlm
+    pull_policy: always
     build: 
       context: ./fastflowlm/
     container_name: fastflowlm
@@ -18,7 +19,7 @@ services:
     group_add:
       - keep-groups
     environment:
-      - MODEL_1=gemma3:1b
+      - MODEL_1=qwen3.6-moe:35b-a3b
     volumes:
       - ../models:/root/.config/flm    
     devices:
@@ -34,15 +35,17 @@ services:
     command: >
       sh -c "
       whoami &&
+      flm validate &&
       ls -ld /workspace &&
       echo 'Checking and downloading models...' &&
       flm pull $$MODEL_1 &&
       echo 'All models ready! Starting FastFlowLM server...' &&
-      exec flm serve --host 0.0.0.0 --port 52625
+      exec flm serve --img-pre-resize 4 --host 0.0.0.0 --port 52625
       "
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main-slim
+    pull_policy: always
     container_name: open-webui
     ports:
       - "8080:8080"

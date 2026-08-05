@@ -1,3 +1,3 @@
 [submodule "fastflowlm"]
-	path = external/fastflowlm
+	path = src/fastflowlm/external/fastflowlm
 	url = https://github.com/FastFlowLM/FastFlowLM.git

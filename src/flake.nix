@@ -21,7 +21,7 @@
         shellHook = ''
           export XDG_RUNTIME_DIR=$(mktemp -d)
           export PODMAN_USERNS=keep-id
-          podman compose up
+          podman-compose --podman-pull-args="--tls-verify=false" --podman-run-args="--tls-verify=false" up
         '';
       };
     };

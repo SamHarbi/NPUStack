@@ -49,8 +49,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /workspace
 
-COPY ../../* ./src
+COPY ./* ./deployment/
 
-RUN chmod +x ./src/fastflowlm/fastflowlm-build.sh && ./src/fastflowlm/fastflowlm-build.sh
+RUN ls ./deployment/fastflowlm/
+
+RUN chmod +x ./deployment/fastflowlm-build.sh && ./deployment/fastflowlm-build.sh
 
 CMD ["/bin/bash"]
