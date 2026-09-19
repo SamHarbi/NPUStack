@@ -10,12 +10,10 @@ services:
 
   fastflowlm:
     image: localhost:5000/fastflowlm
-    pull_policy: always
     build: 
       context: ./fastflowlm/
     container_name: fastflowlm
-    user: "0:0" 
-    privileged: true
+    network_mode: host
     group_add:
       - keep-groups
     environment:
@@ -47,6 +45,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main-slim
     pull_policy: always
     container_name: open-webui
+    network_mode: host
     ports:
       - "8080:8080"
     volumes:
