@@ -7,7 +7,7 @@
 </svg> -->
 
 
-# NPU-Flux: AMD XDNA Local LLM Container Stack
+# StackedNPU: AMD XDNA Local LLM Container Stack
 
 <p align="center">
   <img src="showcase.png" width="50%" alt="NPU-Flux + Aider working on this repo">
