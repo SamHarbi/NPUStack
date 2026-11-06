@@ -16,13 +16,14 @@
 </p>
 
 
-High-performance, containerized deployment of FastFlowLM optimized for pure NPU inference on edge devices. This is my personal portable system that I use for light agentic workflows on my laptop, so it's somewhat opinionated towards the following goals:
-- **No token limits, self-hosted intelligence with the latest features**: Compliant with API standards, use it with the latest MCP CLI tools such as Codex, Aider and others. OpenWebUI is delivered with this project by default. Everything runs on local hardware and is always accessible.
+High-performance, containerized deployment of FastFlowLM and other accompanying AI tools optimized for pure NPU inference on AMD hardware when battery power is a priority over pure inference speed. This is based on my own personal, portable system that I use for light agentic workflows on my laptop, so it's somewhat opinionated towards the following goals:
+- **No token limits, self-hosted intelligence with the latest features**: Compliant with API standards, use it with the latest MCP CLI tools such as OpenCode, Codex, Aider and others. OpenWebUI is delivered with this project by default. Everything runs on local hardware and is always accessible.
 
-- **High power efficiency and background friendly:** All inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps my system responsive with a minimal effect on power draw (subject to RAM constraints).
-- **Linux first, containerized deployment:** I run Debian, so stability is a priority. Containerization keeps deployment decoupled.
+- **High power efficiency and background friendly:** All inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps the system responsive with a minimal effect on power draw (subject to RAM constraints).
+- **Linux first, secure containerized deployment:** I run Debian, so stability is a priority. Containerization keeps deployment decoupled and provides a layer of isolation from agents, avoiding unintended accidents.
 - **Bleeding-edge, Frontier AI:** NPU-Flux tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
 - **Open Source focus:** Every component of NPU-Flux is open source, supporting my personal learning journey in managing software with the opportunity of contributing back to AI development.
+<!-- - **AI in a box**: I specifically designed this as an all-in-one wrapper for all of my AI needs. Which allows me to easily debug and deploy new things on top for experimental testing. -->
 
 <!-- ## Project Context
 NPU-Flux is not FastFlowLM itself, but rather a deployment solution built to run it efficiently on AMD hardware. It wraps the official FastFlowLM binary (sourced via git submodule) within a robust container environment managed by Podman and orchestrated by Nix. This separation allows for easy updates to the underlying runtime while maintaining a consistent deployment interface. -->
@@ -43,10 +44,15 @@ NPU-Flux is not FastFlowLM itself, but rather a deployment solution built to run
 ### Software & OS
 - **OS**: Linux and Windows only. MacOS is unsupported (See Kernel requirement). I mainly test this project on Debian.
 - **Kernel**: If on Linux: Version 7.0+ required to include the `amdxdna` driver. Older kernels may require backports or manual driver installation. Windows 11 supports all needed drivers out of the box.
-- **Runtime (Optional)**: Podman will be automatically installed using Nix if using included .sh start scripts, otherwise need to source your own installation of a container runtime (i.e Docker, Podman).
+- **Runtime (Optional)**: Podman will be automatically installed using Nix if using included .sh start scripts, otherwise need to source your own installation of a container engine (i.e Docker, Podman).
 
 ## Quick Start Guide
+Ensure you have Docker installed and run:
+```
+docker run -d -p 8080:80 --name StackedNPU_Instance StackedNPU
+```
 
+## In-depth Start Guide (i.e: For Debian, Arch)
 ### 1. Firmware Installation
 Ensure the AMD NPU firmware is present on your system. If using a standard Debian installation, you may need to install it manually or via package manager:
 ```bash

@@ -57,3 +57,19 @@ services:
     restart: unless-stopped
     depends_on:
       - fastflowlm
+
+  opencode:
+    image: ghcr.io/anomalyco/opencode:latest
+    container_name: opencode
+    restart: unless-stopped
+    command: serve --hostname 0.0.0.0 --port 8081
+    network_mode: host
+    ports:
+      - "8081:8081"
+    environment:
+      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
+      - OPENAI_API_KEY=dummy-key
+    volumes:
+      - ../opencode-config:/root/.config/opencode
+      - ../opencode-share:/root/.local/share/opencode
+
