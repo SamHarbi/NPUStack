@@ -1,6 +1,6 @@
 # Runner — systemd user service
 
-`npustackedcoder.service` is a **systemd user unit** (not a system/root
+`npustack.service` is a **systemd user unit** (not a system/root
 service). It brings the whole stack up as a single, seamless userspace
 service: one `enable --now` starts FastFlowLM, OpenWebUI, and OpenCode
 via podman compose, and stopping the unit stops them all.
@@ -12,18 +12,18 @@ cloned this repo somewhere other than `~/npu-llm`, then:
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp src/runner/npustackedcoder.service ~/.config/systemd/user/
+cp src/runner/npustack.service ~/.config/systemd/user/
 systemctl --user daemon-reload
-systemctl --user enable --now npustackedcoder.service
+systemctl --user enable --now npustack.service
 ```
 
 ## Use
 
 ```bash
-systemctl --user status npustackedcoder.service
-journalctl --user -u npustackedcoder.service -f
-systemctl --user stop npustackedcoder.service
-systemctl --user disable npustackedcoder.service
+systemctl --user status npustack.service
+journalctl --user -u npustack.service -f
+systemctl --user stop npustack.service
+systemctl --user disable npustack.service
 ```
 
 The unit runs `podman compose up` in the foreground (`Type=simple`),
