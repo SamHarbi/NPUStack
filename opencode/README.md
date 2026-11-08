@@ -37,8 +37,8 @@ Intentionally not installed:
 ## Building and running
 
 ```bash
-podman build -t npustackedcoder-opencode-dev ./opencode
-# or: docker build -t npustackedcoder-opencode-dev ./opencode
+podman build -t npustack-opencode-dev ./opencode
+# or: docker build -t npustack-opencode-dev ./opencode
 
 podman compose up -d opencode
 ```
