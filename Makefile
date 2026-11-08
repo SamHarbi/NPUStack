@@ -1,7 +1,7 @@
 .PHONY: help up down logs
 
 help:
-	@echo "NPUStackedCoder (npu-llm) - local helpers"
+	@echo "NPUStack (npu-llm) - local helpers"
 	@echo "  make up    - start the stack with podman compose"
 	@echo "  make down  - stop the stack"
 	@echo "  make logs  - follow stack logs"
