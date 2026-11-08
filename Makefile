@@ -1,10 +1,16 @@
-.PHONY: start
-start:
-	sudo mkdir -p /home/server/npu-llm && \
-	sudo cp -r ./* /home/server/npu-llm/ && \
-	sudo chown server /home/server/npu-llm/ && \
-	sudo mkdir -p /home/server/.config/containers/ && \
-	sudo mv /home/server/npu-llm/src/fastflowlm/policy.json /home/server/.config/containers/
-# 	nix develop
-# 	su server
-# 	podman compose run
+.PHONY: help up down logs
+
+help:
+	@echo "NPUStackedCoder (npu-llm) - local helpers"
+	@echo "  make up    - start the stack with podman compose"
+	@echo "  make down  - stop the stack"
+	@echo "  make logs  - follow stack logs"
+
+up:
+	podman compose -f src/docker-compose.yml up -d
+
+down:
+	podman compose -f src/docker-compose.yml down
+
+logs:
+	podman compose -f src/docker-compose.yml logs -f
