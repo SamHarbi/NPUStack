@@ -1,18 +1,13 @@
-```text
- ███╗   ██╗██████╗ ██╗   ██╗███████╗████████╗ █████╗  ██████╗██╗  ██╗██████╗
- ████╗  ██║██╔══██╗██║   ██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║  ██║██╔══██╗
- ██╔██╗ ██║██████╔╝██║   ██║███████╗   ██║   ███████║██║     ███████║██║  ██║
- ██║╚██╗██║██╔═══╝ ██║   ██║╚════██║   ██║   ██╔══██║██║     ██╔══██║██║  ██║
- ██║ ╚████║██║     ╚██████╔╝███████║   ██║   ██║  ██║╚██████╗██║  ██║╚██████╔╝
- ╚═╝  ╚═══╝╚═╝      ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝
-```
+<p align="center">
+  <img src="logo.svg" alt="NPUStack logo" width="60%">
+</p>
 
-# NPUStackedCoder: AMD XDNA Local LLM Container Stack
+# NPUStack: AMD XDNA Local LLM Container Stack
 
 <p align="center">
-  <img src="showcase.png" width="50%" alt="NPUStackedCoder + Aider working on this repo">
+  <img src="showcase.png" width="50%" alt="NPUStack + Aider working on this repo">
   <br>
-  <em>Qwen3.5:9b working on this repo via Aider enabled Agentic/Vibe Coding on NPUStackedCoder</em>
+  <em>Qwen3.5:9b working on this repo via Aider enabled Agentic/Vibe Coding on NPUStack</em>
 </p>
 
 
@@ -21,12 +16,12 @@ High-performance, containerized deployment of FastFlowLM and other accompanying 
 
 - **High power efficiency and background friendly:** All inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps the system responsive with a minimal effect on power draw (subject to RAM constraints).
 - **Linux first, secure containerized deployment:** I run Debian, so stability is a priority. Containerization keeps deployment decoupled and provides a layer of isolation from agents, avoiding unintended accidents.
-- **Bleeding-edge, Frontier AI:** NPUStackedCoder tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
-- **Open Source focus:** Every component of NPUStackedCoder is open source, supporting my personal learning journey in managing software with the opportunity of contributing back to AI development.
+- **Bleeding-edge, Frontier AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
+- **Open Source focus:** Every component of NPUStack is open source, supporting my personal learning journey in managing software with the opportunity of contributing back to AI development.
 <!-- - **AI in a box**: I specifically designed this as an all-in-one wrapper for all of my AI needs. Which allows me to easily debug and deploy new things on top for experimental testing. -->
 
 <!-- ## Project Context
-NPUStackedCoder is not FastFlowLM itself, but rather a deployment solution built to run it efficiently on AMD hardware. It wraps the official FastFlowLM binary (sourced via git submodule) within a robust container environment managed by Podman and orchestrated by Nix. This separation allows for easy updates to the underlying runtime while maintaining a consistent deployment interface. -->
+NPUStack is not FastFlowLM itself, but rather a deployment solution built to run it efficiently on AMD hardware. It wraps the official FastFlowLM binary (sourced via git submodule) within a robust container environment managed by Podman and orchestrated by Nix. This separation allows for easy updates to the underlying runtime while maintaining a consistent deployment interface. -->
 
 <!-- ## Features
 - **NPU Acceleration**: Optimized inference using AMD XDNA/NPU hardware via `/dev/accel`.
@@ -58,7 +53,7 @@ NPUStackedCoder is not FastFlowLM itself, but rather a deployment solution built
 >
 > Once published, the intended one-liner will be documented here, e.g.:
 > ```bash
-> docker run -d -p 8080:80 --name NPUStackedCoder_Instance <image>
+> docker run -d -p 8080:80 --name NPUStack_Instance <image>
 > ```
 
 ## In-depth Start Guide (i.e: For Debian, Arch)
