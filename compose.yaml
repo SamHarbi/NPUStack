@@ -1,0 +1,99 @@
+# NPUStackedCoder — single compose entrypoint (PUB-007)
+#
+# Usage:
+#   podman compose up -d            # or: docker compose up -d
+#   podman compose --profile registry up -d   # also start the local registry
+#
+# Profiles:
+#   (default)  fastflowlm, open-webui, opencode
+#   registry   local container registry (builder workflow only)
+#
+# Networking parity (host vs bridge), secrets/env handling, and the
+# OpenCode agent-dev image are tracked in PUB-010, PUB-012, and PUB-025.
+
+services:
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ./data/ollama_data:/root/.ollama
+  #   restart: unless-stopped
+
+  fastflowlm:
+    image: localhost:5000/fastflowlm
+    build:
+      context: ./fastflowlm/
+    container_name: fastflowlm
+    network_mode: host
+    group_add:
+      - keep-groups
+    environment:
+      - MODEL_1=qwen3.6-moe:35b-a3b
+    volumes:
+      - ./data/models:/root/.config/flm
+    devices:
+      - "/dev/kfd:/dev/kfd"
+      - "/dev/dri:/dev/dri"
+      - "/dev/accel/accel0:/dev/accel/accel0"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "52625:52625"
+    command: >
+      sh -c "
+      whoami &&
+      flm validate &&
+      ls -ld /workspace &&
+      echo 'Checking and downloading models...' &&
+      flm pull $$MODEL_1 &&
+      echo 'All models ready! Starting FastFlowLM server...' &&
+      exec flm serve --img-pre-resize 4 --host 0.0.0.0 --port 52625
+      "
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main-slim
+    pull_policy: always
+    container_name: open-webui
+    network_mode: host
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/open_webui_data:/app/backend/data
+    environment:
+      # Point WebUI to FLM's OpenAI-compatible server
+      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
+      - OPENAI_API_KEY=dummy-key
+    restart: unless-stopped
+    depends_on:
+      - fastflowlm
+
+  opencode:
+    image: ghcr.io/anomalyco/opencode:latest
+    container_name: opencode
+    restart: unless-stopped
+    command: serve --hostname 0.0.0.0 --port 8081
+    network_mode: host
+    ports:
+      - "8081:8081"
+    environment:
+      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
+      - OPENAI_API_KEY=dummy-key
+    volumes:
+      - ./data/opencode-config:/root/.config/opencode
+      - ./data/opencode-share:/root/.local/share/opencode
+
+  registry:
+    image: docker.io/library/registry:2
+    container_name: local-registry
+    profiles: ["registry"]
+    ports:
+      - "5000:5000"
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
+    volumes:
+      - ./data/registry_data:/var/lib/registry:Z
+    restart: always
