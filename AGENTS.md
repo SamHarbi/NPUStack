@@ -4,9 +4,10 @@ Instructions for AI coding agents (and other LLM tools that read this file) work
 
 ## Project identity
 
-- Canonical project name: **NPUStackedCoder**
+- Canonical project name: **NPUStack**
 - Repository slug is still `npu-llm` — do **not** rename the repository or change any repository settings without explicit owner instruction.
-- Rename user-facing text consistently to NPUStackedCoder. Do not reintroduce the old names StackedNPU or NPU-Flux.
+- Rename user-facing text consistently to NPUStack. Do not reintroduce the old names StackedNPU, NPU-Flux, or NPUStackedCoder.
+- Logo: `logo.svg` at the repo root (Russo One, two-tone: `NPU` in `#a46422`, `Stack` in `#eb8931`). Do not reintroduce the ASCII logo.
 
 ## Mandatory AI-agent attribution
 
