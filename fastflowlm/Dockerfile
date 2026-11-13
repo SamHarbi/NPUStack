@@ -7,13 +7,11 @@ FROM ${BASE_IMAGE}
 LABEL org.opencontainers.image.description="FastFlowLM runtime environment (built from source)"
 
 # Prevent interactive prompts during installation
-ENV DEBIAN_FRONTEND=noninteractive
 ARG UBUNTU_PPA=""
 ARG BACKPORTS=""
 
 # Optional PPA escape hatch (e.g. --build-arg UBUNTU_PPA=ppa:amd-team/xrt).
 # The third-party PPAs previously added unconditionally
-# (lemonade-team/stable, amd-team/xrt) are NOT added by default: upstream
 # FastFlowLM builds against the distro libxrt-dev package.
 # Set up PPA if needed
 RUN if [ -n "$UBUNTU_PPA" ]; then \
@@ -48,10 +46,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rustc \
     uuid-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# NOTE: amdxdna-dkms is intentionally NOT installed here. The NPU kernel
-# driver belongs on the host kernel, not inside the container (see README
-# "System Requirements" / PUB-005).
 
 WORKDIR /workspace
 

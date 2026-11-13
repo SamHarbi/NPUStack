@@ -2,7 +2,6 @@ data/models
 data/ollama_data
 data/open_webui_data
 data/registry_data
-.aider*
 old
 data/opencode-config
 data/opencode-share

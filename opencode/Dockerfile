@@ -32,7 +32,6 @@ RUN apk add --no-cache \
     && ln -s /opt/uv/bin/uv /usr/local/bin/uv \
     # Verify the tools agents rely on, including bun from the base layer.
     && opencode --version \
-    && bun --version \
     && rg --version \
     && git --version \
     && gh --version \

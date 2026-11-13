@@ -12,6 +12,8 @@
 # PUB-012. The opencode service builds from ./opencode (PUB-025).
 
 services:
+  # I prefer to keep inference purely on the NPU for power efficiency and better overall response when
+  # multitasking (CPU / GPU not busy with inference), but if your workflow is different- feel free to spin up ollama here too
   # ollama:
   #   image: ollama/ollama:latest
   #   container_name: ollama
