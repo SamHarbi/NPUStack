@@ -84,4 +84,6 @@ COPY ./fastflowlm-build.sh ./fastflowlm-build.sh
 
 RUN chmod +x ./fastflowlm-build.sh && ./fastflowlm-build.sh
 
+ENV PATH="/opt/fastflowlm/bin/:${PATH}"
+
 CMD ["/bin/bash"]

@@ -24,15 +24,13 @@ services:
   #   restart: unless-stopped
 
   fastflowlm:
-    image: localhost:5000/fastflowlm
+    image: fastflowlm:latest
     build:
       context: ./fastflowlm/
     container_name: fastflowlm
     network_mode: host
     group_add:
       - keep-groups
-    environment:
-      - MODEL_1=qwen3.6-moe:35b-a3b
     volumes:
       - ./data/models:/root/.config/flm
     devices:
@@ -49,10 +47,7 @@ services:
       sh -c "
       whoami &&
       flm validate &&
-      ls -ld /workspace &&
-      echo 'Checking and downloading models...' &&
-      flm pull $$MODEL_1 &&
-      echo 'All models ready! Starting FastFlowLM server...' &&
+      echo 'Starting FastFlowLM server...' &&
       exec flm serve --img-pre-resize 4 --host 0.0.0.0 --port 52625
       "
 
@@ -92,15 +87,3 @@ services:
       - ./workspace:/workspace
       - ./data/opencode-config:/root/.config/opencode
       - ./data/opencode-share:/root/.local/share/opencode
-
-  registry:
-    image: docker.io/library/registry:2
-    container_name: local-registry
-    profiles: ["registry"]
-    ports:
-      - "5000:5000"
-    environment:
-      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
-    volumes:
-      - ./data/registry_data:/var/lib/registry:Z
-    restart: always
