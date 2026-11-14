@@ -7,3 +7,4 @@ data/opencode-config
 data/opencode-share
 workspace/*
 !workspace/.gitkeep
+data/caddy*

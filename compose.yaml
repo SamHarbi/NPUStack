@@ -11,6 +11,11 @@
 # Networking parity and secrets/env handling are tracked in PUB-010 and
 # PUB-012. The opencode service builds from ./opencode (PUB-025).
 
+networks:
+  cross_container:
+    driver: bridge
+    internal: true
+
 services:
   # I prefer to keep inference purely on the NPU for power efficiency and better overall response when
   # multitasking (CPU / GPU not busy with inference), but if your workflow is different- feel free to spin up ollama here too
@@ -25,10 +30,10 @@ services:
 
   fastflowlm:
     image: fastflowlm:latest
+    stop_signal: SIGINT
     build:
       context: ./fastflowlm/
     container_name: fastflowlm
-    network_mode: host
     group_add:
       - keep-groups
     volumes:
@@ -41,8 +46,6 @@ services:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - "52625:52625"
     command: >
       sh -c "
       whoami &&
@@ -50,23 +53,28 @@ services:
       echo 'Starting FastFlowLM server...' &&
       exec flm serve --img-pre-resize 4 --host 0.0.0.0 --port 52625
       "
+    networks:
+      - cross_container
+    expose:
+      - "52625"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main-slim
     pull_policy: always
     container_name: open-webui
-    network_mode: host
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     volumes:
       - ./data/open_webui_data:/app/backend/data
     environment:
       # Point WebUI to FLM's OpenAI-compatible server
-      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
+      - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1
       - OPENAI_API_KEY=dummy-key
     restart: unless-stopped
     depends_on:
       - fastflowlm
+    networks:
+      - cross_container
 
   opencode:
     build:
@@ -76,9 +84,8 @@ services:
     restart: unless-stopped
     command: serve --hostname 0.0.0.0 --port 8081
     working_dir: /workspace
-    network_mode: host
-    ports:
-      - "8081:8081"
+    expose:
+      - "8081"
     environment:
       - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
       # TODO(PUB-012): move to .env, do not commit a real key.
@@ -87,3 +94,22 @@ services:
       - ./workspace:/workspace
       - ./data/opencode-config:/root/.config/opencode
       - ./data/opencode-share:/root/.local/share/opencode
+    networks:
+      - cross_container
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+      - "${HTTPS_PORT:-8443}:443/udp"
+    environment:
+      - SITE_ADDRESS=${SITE_ADDRESS:-http://npu-stack.localhost}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy_data:/data
+      - ./data/caddy_config:/config
+    networks:
+      - cross_container

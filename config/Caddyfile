@@ -1,0 +1,11 @@
+{$SITE_ADDRESS:http://npu-stack.localhost} {
+    # stripping "/opencode" before forwarding
+    handle_path /opencode/* {
+        reverse_proxy opencode:8081
+    }
+
+    # Route everything else to open-webui on port 8080
+    handle {
+        reverse_proxy open-webui:8080
+    }
+}
