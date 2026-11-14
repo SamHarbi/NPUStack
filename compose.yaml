@@ -10,11 +10,12 @@
 #
 # Networking parity and secrets/env handling are tracked in PUB-010 and
 # PUB-012. The opencode service builds from ./opencode (PUB-025).
-
 networks:
   cross_container:
     driver: bridge
-    internal: true
+    internal: true        # no direct egress for app containers
+  egress:
+    driver: bridge        # only squid joins this one
 
 services:
   # I prefer to keep inference purely on the NPU for power efficiency and better overall response when
@@ -46,6 +47,15 @@ services:
       memlock:
         soft: -1
         hard: -1
+    environment:
+      # Forward proxy for outbound traffic (model downloads etc.)
+      # Both cases set because different HTTP clients read different ones.
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode
+      - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode
     command: >
       sh -c "
       whoami &&
@@ -67,7 +77,6 @@ services:
     volumes:
       - ./data/open_webui_data:/app/backend/data
     environment:
-      # Point WebUI to FLM's OpenAI-compatible server
       - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1
       - OPENAI_API_KEY=dummy-key
     restart: unless-stopped
@@ -87,8 +96,7 @@ services:
     expose:
       - "8081"
     environment:
-      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
-      # TODO(PUB-012): move to .env, do not commit a real key.
+      - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1   # was host.docker.internal, see notes
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key}
     volumes:
       - ./workspace:/workspace
@@ -97,19 +105,14 @@ services:
     networks:
       - cross_container
 
-  caddy:
-    image: caddy:2-alpine
+  squid:
+    image: ubuntu/squid:latest
+    container_name: squid
     restart: unless-stopped
     ports:
-      - "${HTTP_PORT:-8080}:80"
-      - "${HTTPS_PORT:-8443}:443"
-      - "${HTTPS_PORT:-8443}:443/udp"
-    environment:
-      - SITE_ADDRESS=${SITE_ADDRESS:-http://npu-stack.localhost}
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - "${HTTP_PORT:-8080}:3080"       # reverse-proxy listener only
     volumes:
-      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./data/caddy_data:/data
-      - ./data/caddy_config:/config
+      - ./config/squid.conf:/etc/squid/squid.conf:ro
     networks:
-      - cross_container
+      - cross_container   # talks to apps, serves fastflowlm's proxy requests
+      - egress            # outbound internet access
