@@ -13,4 +13,4 @@ fi
 cd "$SRC_DIR"
 cmake --preset linux-default
 cmake --build build -j"$(nproc)"
-cmake --install build
+cd build && cmake --install .
