@@ -1,7 +1,0 @@
-http://npu-stack-opencode.localhost {
-    reverse_proxy opencode:8081
-}
-
-http://npu-stack-ui.localhost {
-    reverse_proxy open-webui:8080
-}

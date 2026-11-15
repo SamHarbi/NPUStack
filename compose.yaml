@@ -23,8 +23,8 @@ services:
   # ollama:
   #   image: ollama/ollama:latest
   #   container_name: ollama
-  #   ports:
-  #     - "11434:11434"
+  #   expose:
+  #     - "8082"
   #   volumes:
   #     - ./data/ollama_data:/root/.ollama
   #   restart: unless-stopped
@@ -61,29 +61,29 @@ services:
       whoami &&
       flm validate &&
       echo 'Starting FastFlowLM server...' &&
-      exec flm serve --img-pre-resize 4 --host 0.0.0.0 --port 52625
+      exec flm serve --socket 20 --q-len 20 --host 0.0.0.0 --port 52625
       "
     networks:
       - cross_container
     expose:
       - "52625"
 
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:main-slim
-    pull_policy: always
-    container_name: open-webui
-    expose:
-      - "8080"
-    volumes:
-      - ./data/open_webui_data:/app/backend/data
-    environment:
-      - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1
-      - OPENAI_API_KEY=dummy-key
-    restart: unless-stopped
-    depends_on:
-      - fastflowlm
-    networks:
-      - cross_container
+  # open-webui:
+  #   image: ghcr.io/open-webui/open-webui:main-slim
+  #   pull_policy: always
+  #   container_name: open-webui
+  #   expose:
+  #     - "8080"
+  #   volumes:
+  #     - ./data/open_webui_data:/app/backend/data
+  #   environment:
+  #     - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1
+  #     - OPENAI_API_KEY=dummy-key
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - fastflowlm
+  #   networks:
+  #     - cross_container
 
   opencode:
     build:
@@ -91,16 +91,24 @@ services:
     image: npustack-opencode-dev:latest
     container_name: opencode
     restart: unless-stopped
-    command: serve --hostname 0.0.0.0 --port 8081
+    command: serve --hostname 0.0.0.0 --port 8080
     working_dir: /workspace
     expose:
       - "8081"
     environment:
       - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1   # was host.docker.internal, see notes
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key}
+      # Forward proxy for outbound traffic (model downloads etc.)
+      # Both cases set because different HTTP clients read different ones.
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode
+      - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode
     volumes:
       - ./workspace:/workspace
-      - ./data/opencode-config:/root/.config/opencode
+      - ./config/opencode.json:/root/.config/opencode/opencode.json
       - ./data/opencode-share:/root/.local/share/opencode
     networks:
       - cross_container
