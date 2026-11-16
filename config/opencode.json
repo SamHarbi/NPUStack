@@ -9,10 +9,7 @@
         "apiKey": "{env:OPENAI_API_KEY}",
         "timeout": 1800000,
         "headerTimeout": 120000,
-        "chunkTimeout": 600000,
-        "headers": {
-          "Connection": "close"
-        }
+        "chunkTimeout": 600000
       },
       "models": {
         "qwen3.6-moe:35b-a3b": {
@@ -40,6 +37,23 @@
   "agent": {
     "title": {
       "disable": false
+    }
+  },
+    "mcp": {
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+        "Authorization": "{env:GITHUB_PAT}"
+      }
+    }
+  },
+    "permissions": {
+    "read": {
+      "*.env": "deny",
+      "*.env.*": "deny"
     }
   }
 }

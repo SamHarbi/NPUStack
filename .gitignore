@@ -8,3 +8,5 @@ data/opencode-share
 workspace/*
 !workspace/.gitkeep
 data/caddy*
+secrets.env
+*.env

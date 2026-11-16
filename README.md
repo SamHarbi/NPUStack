@@ -1,34 +1,23 @@
 <p align="center">
-  <img src="logo.svg" alt="NPUStack logo" width="60%">
+  <img src="./images/logo.svg" alt="NPUStack logo" width="60%">
 </p>
-
-# NPUStack: AMD XDNA Local LLM Container Stack
 
 <p align="center">
-  <img src="showcase.png" width="50%" alt="NPUStack + Aider working on this repo">
+  <img src="./images/showcase-opencode.png" width="50%" alt="NPUStack + OpenCode writing python fully locally">
   <br>
-  <em>Qwen3.5:9b working on this repo via Aider enabled Agentic/Vibe Coding on NPUStack</em>
+  <em>Qwen3.5:9b working via OpenCode enabled Agentic/Vibe Coding on NPUStack</em>
 </p>
 
+# NPUStack: Containerized Local AMD NPU inference stack
 
-High-performance, containerized deployment of FastFlowLM and other accompanying AI tools optimized for pure NPU inference on AMD hardware when battery power is a priority over pure inference speed. This is based on my own personal, portable system that I use for light agentic workflows on my laptop, so it's somewhat opinionated towards the following goals:
-- **No token limits, self-hosted intelligence with the latest features**: Compliant with API standards, use it with the latest MCP CLI tools such as OpenCode, Codex, Aider and others. OpenWebUI is delivered with this project by default. Everything runs on local hardware and is always accessible.
+High-performance, containerized deployment of FastFlowLM and other accompanying AI tools optimized for pure NPU inference on AMD hardware when battery power is a priority, with seamless switchover to cloud services. This is based on my own personal, portable system that I use for light agentic workflows on my laptop (No dedicated GPU), so it's somewhat opinionated towards the following goals:
 
+- **All-in-one Agentic environment**: Manage all of my AI services as one, well-defined service that can be easily migrated and extended.
+- **No token limits, self-hosted intelligence with the latest features**: Compliant with API standards, use it with the latest MCP CLI tools while pulling in local NPU or remote intelligence (via OpenCode) as needed.
 - **High power efficiency and background friendly:** All inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps the system responsive with a minimal effect on power draw (subject to RAM constraints).
 - **Linux first, secure containerized deployment:** I run Debian, so stability is a priority. Containerization keeps deployment decoupled and provides a layer of isolation from agents, avoiding unintended accidents.
-- **Bleeding-edge, Frontier AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
+- **Bleeding-edge, Frontier local AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
 - **Open Source focus:** Every component of NPUStack is open source, supporting my personal learning journey in managing software with the opportunity of contributing back to AI development.
-<!-- - **AI in a box**: I specifically designed this as an all-in-one wrapper for all of my AI needs. Which allows me to easily debug and deploy new things on top for experimental testing. -->
-
-<!-- ## Project Context
-NPUStack is not FastFlowLM itself, but rather a deployment solution built to run it efficiently on AMD hardware. It wraps the official FastFlowLM binary (sourced via git submodule) within a robust container environment managed by Podman and orchestrated by Nix. This separation allows for easy updates to the underlying runtime while maintaining a consistent deployment interface. -->
-
-<!-- ## Features
-- **NPU Acceleration**: Optimized inference using AMD XDNA/NPU hardware via `/dev/accel`.
-- **GPU Support (Optional)**: Full GPU acceleration support through `kfd` and `dri` devices if available.
-- **Web Interface**: Integrated Open WebUI for easy model interaction.
-- **Reproducible Environments**: Built on Nix (`flake.nix`) for dependency management and consistency.
-- **Container Orchestration**: Managed via Podman Compose with host networking for optimal performance. -->
 
 ## System Requirements
 

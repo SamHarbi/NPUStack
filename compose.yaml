@@ -95,6 +95,8 @@ services:
     working_dir: /workspace
     expose:
       - "8081"
+    env_file:
+      - ./config/secrets.env
     environment:
       - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1   # was host.docker.internal, see notes
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key}
