@@ -39,21 +39,31 @@
       "disable": false
     }
   },
-    "mcp": {
-    "github": {
-      "type": "remote",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "Authorization": "{env:GITHUB_PAT}"
-      }
-    }
-  },
-    "permissions": {
-    "read": {
+    "permissions": [
+    {
+      "action": "edit",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "~/*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "~/*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
       "*.env": "deny",
       "*.env.*": "deny"
     }
-  }
+  ]  
 }
