@@ -2,21 +2,23 @@
   <img src="./images/logo.svg" alt="NPUStack logo" width="60%">
 </p>
 
+
+
 <p align="center">
-  <img src="./images/showcase-opencode.png" width="50%" alt="NPUStack + OpenCode writing python fully locally">
+  <img src="./images/showcase-opencode.png" width="47%" alt="NPUStack + OpenCode writing python fully locally">&nbsp;&nbsp;&nbsp;
+   <img src="./images/npustack_architecture.svg" alt="Second image" width="35%">
   <br>
   <em>Qwen3.5:9b working via OpenCode enabled Agentic/Vibe Coding on NPUStack</em>
 </p>
 
-# NPUStack: Containerized Local AMD NPU inference stack
+# Containerized, AMD NPU optimised inference stack
 
-High-performance, containerized deployment of FastFlowLM and other accompanying AI tools optimized for pure NPU inference on AMD hardware when battery power is a priority, with seamless switchover to cloud services. This is based on my own personal, portable system that I use for light agentic workflows on my laptop (No dedicated GPU), so it's somewhat opinionated towards the following goals:
+NPUStack is a containerized deployment of FastFlowLM and other accompanying AI tools optimized for pure NPU inference on AMD hardware when battery power is a priority, while still allowing for seamless switchover to cloud services. Based on my own laptop/portable agentic stack, this project is opinionated towards the following goals:
 
-- **All-in-one Agentic environment**: Manage all of my AI services as one, well-defined service that can be easily migrated and extended.
-- **No token limits, self-hosted intelligence with the latest features**: Compliant with API standards, use it with the latest MCP CLI tools while pulling in local NPU or remote intelligence as needed.
-- **High power efficiency and background friendly:** All inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps the system responsive with a minimal effect on power draw (subject to RAM constraints).
-- **Linux first, secure containerized deployment:** I daily drive Linux for my dev work. This project is a one click* containerized deploy that is stable and secure.
+- **High power efficiency and background friendly:** All local inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps the system responsive with a minimal effect on power draw (subject to RAM constraints).
+- **Linux first, secure containerized deployment:** I daily drive Linux for my dev work. This project is a _mostly_ one click containerized deploy that is stable and secure in separating agents from host.
 - **Bleeding-edge, Frontier local AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
+
 
 ## System Requirements
 
