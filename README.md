@@ -1,17 +1,18 @@
 <p align="center">
-  <img src="./images/logo.svg" alt="NPUStack logo" width="60%">
+  <img src="./images/logo.svg" alt="NPUStack logo" width="40%">
+  <br>
+  <em>Containerized, AMD NPU optimised inference stack</em>
 </p>
 
 
 
 <p align="center">
-  <img src="./images/showcase-opencode.png" width="47%" alt="NPUStack + OpenCode writing python fully locally">&nbsp;&nbsp;&nbsp;
-   <img src="./images/npustack_architecture.svg" alt="Second image" width="35%">
+  <img src="./images/showcase-opencode.png" width="100%" alt="NPUStack + OpenCode writing python fully locally">
   <br>
   <em>Qwen3.5:9b working via OpenCode enabled Agentic/Vibe Coding on NPUStack</em>
 </p>
 
-# Containerized, AMD NPU optimised inference stack
+# About
 
 NPUStack is a containerized deployment of FastFlowLM and other accompanying AI tools optimized for pure NPU inference on AMD hardware when battery power is a priority, while still allowing for seamless switchover to cloud services. Based on my own laptop/portable agentic stack, this project is opinionated towards the following goals:
 
@@ -19,10 +20,19 @@ NPUStack is a containerized deployment of FastFlowLM and other accompanying AI t
 - **Linux first, secure containerized deployment:** I daily drive Linux for my dev work. This project is a _mostly_ one click containerized deploy that is stable and secure in separating agents from host.
 - **Bleeding-edge, Frontier local AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
 
-### Containers
+### Containers (The Stack in NPUStack)
+   
+<p align="center">
+  <img src="./images/npustack_architecture.svg" alt="Container architecture" width="85%">
+</p>
+
 - **FastFlowLM**: Configured NPU runtime backend server.
-- **OpenCode Web Interface**: NPU, Bring your own API or use a hosted model provided by the OG developers.
+- **OpenCode Web Interface**: NPU, Bring your own API or use a hosted model provided by the OG developers. 
 - **Squid**: Forward and reverse proxy gating internal NPUStack network and host / the internet. Extra layer of control to keep Agents in check, especially once planned browser tools get added in a future version
+- **Steel Browser (Planned)**: All Agent browser activity goes through Steel for first-class agent support and security
+
+> [!WARNING]
+> Although this project explicitly aims to create a secure agentic environment. This capability has not been meaningfully tested on the open internet and cannot provide any assurances or fit for purpose of any kind (See License).
 
 
 ## System Requirements
@@ -66,6 +76,9 @@ sudo mkdir -p /lib/firmware/amdnpu/17f0_10
 sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/amdnpu/17f0_10/npu.sbin.1.1.2.64 -O /lib/firmware/amdnpu/17f0_10/npu_7.sbin
 sudo ln -sf npu_7.sbin /lib/firmware/amdnpu/17f0_10/npu.sbin
 ```
+
+### 2. Building the overall stack
+TODO
 
 ## Local NPU Performance
 
