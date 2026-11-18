@@ -9,7 +9,6 @@ LABEL org.opencontainers.image.description="NPUStack OpenCode agent-development 
 
 # The upstream image is Alpine-based (apk/musl). It already bundles bun
 # and ripgrep; we verify bun below instead of reinstalling it.
-# ca-certificates is intentionally NOT installed: the base OS provides it.
 RUN apk add --no-cache \
         git \
         github-cli \
@@ -42,10 +41,7 @@ RUN apk add --no-cache \
     && node --version \
     && pnpm --version \
     && nvim --version
-
-# Deliberately NOT installed (see README): aider, llm CLI, starship,
-# tmux, fzf, bat, eza, podman, docker, rust, cargo, ca-certificates.
-
+    
 WORKDIR /workspace
 
 # Default command matches the compose service; compose can override it.

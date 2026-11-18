@@ -22,13 +22,13 @@ RUN if [ -n "$BACKPORTS" ]; then \
     fi
 
 # Install all build dependencies
+# Cannot install amdxdna-dkms here, that's a host kernel job
 RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common \
     && add-apt-repository -y ppa:lemonade-team/stable \
     && add-apt-repository -y ppa:amd-team/xrt \
     && apt-get update && apt-get install -y --no-install-recommends \
     libxrt-npu2 \
-    amdxdna-dkms \
     build-essential \
     cargo \
     cmake \

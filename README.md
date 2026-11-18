@@ -19,6 +19,11 @@ NPUStack is a containerized deployment of FastFlowLM and other accompanying AI t
 - **Linux first, secure containerized deployment:** I daily drive Linux for my dev work. This project is a _mostly_ one click containerized deploy that is stable and secure in separating agents from host.
 - **Bleeding-edge, Frontier local AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
 
+### Containers
+- **FastFlowLM**: Configured NPU runtime backend server.
+- **OpenCode Web Interface**: NPU, Bring your own API or use a hosted model provided by the OG developers.
+- **Squid**: Forward and reverse proxy gating internal NPUStack network and host / the internet. Extra layer of control to keep Agents in check, especially once planned browser tools get added in a future version
+
 
 ## System Requirements
 
@@ -46,6 +51,22 @@ NPUStack is a containerized deployment of FastFlowLM and other accompanying AI t
 > docker run -d -p 8080:80 --name NPUStack_Instance <image>
 > ```
 
+
+## Building from source (Linux)
+### 1. Firmware Installation
+Ensure the AMD NPU firmware is present on your system. If using a standard Debian installation, you may need to install it manually or via package manager:
+```bash
+# Attempt automatic installation first
+sudo apt update && sudo apt install linux-firmware-amd-npu
+
+# If that fails or requires specific versions, download manually:
+# Note: Direct links from kernel.org archives are often blocked. 
+# Use a mirror if available, or extract from the official firmware repo.
+sudo mkdir -p /lib/firmware/amdnpu/17f0_10
+sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/amdnpu/17f0_10/npu.sbin.1.1.2.64 -O /lib/firmware/amdnpu/17f0_10/npu_7.sbin
+sudo ln -sf npu_7.sbin /lib/firmware/amdnpu/17f0_10/npu.sbin
+```
+
 ## Local NPU Performance
 
 > [!NOTE]
@@ -64,22 +85,6 @@ Guidelines for entries:
 | Model | Hardware / NPU | Context | Decode (tok/s) | Prefill (tok/s) | Notes |
 |---|---|---|---|---|---|
 | TBD | TBD | TBD | TBD | TBD | TBD |
-
-
-## Building from source (Linux)
-### 1. Firmware Installation
-Ensure the AMD NPU firmware is present on your system. If using a standard Debian installation, you may need to install it manually or via package manager:
-```bash
-# Attempt automatic installation first
-sudo apt update && sudo apt install linux-firmware-amd-npu
-
-# If that fails or requires specific versions, download manually:
-# Note: Direct links from kernel.org archives are often blocked. 
-# Use a mirror if available, or extract from the official firmware repo.
-sudo mkdir -p /lib/firmware/amdnpu/17f0_10
-sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/amdnpu/17f0_10/npu.sbin.1.1.2.64 -O /lib/firmware/amdnpu/17f0_10/npu_7.sbin
-sudo ln -sf npu_7.sbin /lib/firmware/amdnpu/17f0_10/npu.sbin
-```
 
 ## Configuration
 See the ``` config/ ``` directory for config that is fed directly into their respective containers.

@@ -1,6 +1,11 @@
 #!/bin/sh
 set -eu
 
+# !!!
+# This script is meant to be ran in the container during build time. 
+# Do not run it!
+# !!!
+
 # FastFlowLM's CMake source directory inside the pinned submodule.
 SRC_DIR="${SRC_DIR:-/workspace/upstream/fastflowlm/src}"
 

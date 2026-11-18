@@ -11,6 +11,7 @@ Every GitHub issue and pull request created by an AI agent **must** include the 
 - Include it in issue bodies, pull request bodies, and issue/PR comments made by the agent.
 - Do not put it in titles.
 - If an existing issue/PR body cannot be edited, add it in a comment on that issue/PR.
+- Alternatively, Co-authored-by commit trailers also work and do not require attribution as formatted above
 
 ## Working rules
 
