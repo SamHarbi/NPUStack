@@ -2,12 +2,14 @@
   <img src="./images/logo.svg" alt="NPUStack logo" width="40%">
   <br>
   <em>Containerized, AMD NPU optimised inference stack</em>
+  <br>
+  <em>[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)<em>
 </p>
 
 
 
 <p align="center">
-  <img src="./images/showcase-opencode.png" width="100%" alt="NPUStack + OpenCode writing python fully locally">
+  <img src="./images/showcase-opencode.png" width="85%" alt="NPUStack + OpenCode writing python fully locally">
   <br>
   <em>Qwen3.5:9b working via OpenCode enabled Agentic/Vibe Coding on NPUStack</em>
 </p>
@@ -27,9 +29,11 @@ NPUStack is a containerized deployment of FastFlowLM and other accompanying AI t
 </p>
 
 - **FastFlowLM**: Configured NPU runtime backend server.
-- **OpenCode Web Interface**: NPU, Bring your own API or use a hosted model provided by the OG developers. 
+- **OpenCode Server (Web)**: NPU, Bring your own API or use a hosted model provided by the OG developers. 
 - **Squid**: Forward and reverse proxy gating internal NPUStack network and host / the internet. Extra layer of control to keep Agents in check, especially once planned browser tools get added in a future version
 - **Steel Browser (Planned)**: All Agent browser activity goes through Steel for first-class agent support and security
+- **LlamaFirewall (Planned)**: Middleware to catch compromised behavior in Agent behavior. 
+- **Hermes Harness or OpenClaw (Planned)**: Alternative Harness
 
 > [!WARNING]
 > Although this project explicitly aims to create a secure agentic environment. This capability has not been meaningfully tested on the open internet and cannot provide any assurances or fit for purpose of any kind (See License).
@@ -78,7 +82,7 @@ sudo ln -sf npu_7.sbin /lib/firmware/amdnpu/17f0_10/npu.sbin
 ```
 
 ### 2. Building the overall stack
-TODO
+TODO: compose.local.yaml vs compose.yaml
 
 ## Local NPU Performance
 
