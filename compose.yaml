@@ -32,17 +32,26 @@ services:
   fastflowlm:
     image: fastflowlm:latest
     stop_signal: SIGINT
+    read_only: true
     build:
       context: ./fastflowlm/
     container_name: fastflowlm
     group_add:
       - keep-groups
     volumes:
-      - ./data/models:/root/.config/flm
+      - ./data/models:/root/.config/flm:Z
+    tmpfs:
+      - /home/ubuntu/.config/flm
+      - /tmp
     devices:
       - "/dev/kfd:/dev/kfd"
       - "/dev/dri:/dev/dri"
       - "/dev/accel/accel0:/dev/accel/accel0"
+    user: "1000:1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     ulimits:
       memlock:
         soft: -1
@@ -117,9 +126,9 @@ services:
       - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode
       - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode
     volumes:
-      - ./workspace:/workspace:Z
+      - ./workspace:/workspace
       - ./config/opencode.json:/root/.config/opencode/opencode.json:ro
-      - ./data/opencode-share:/root/.local/share/opencode:Z
+      - ./data/opencode-share:/root/.local/share/opencode:z
     networks:
       - cross_container
 
@@ -127,6 +136,14 @@ services:
     image: ubuntu/squid:latest
     container_name: squid
     restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=256m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "${HTTP_PORT:-8080}:3080"       # reverse-proxy listener only
     volumes:
