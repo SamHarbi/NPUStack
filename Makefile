@@ -7,10 +7,10 @@ help:
 	@echo "  make logs  - follow stack logs"
 
 up:
-	podman compose -f src/docker-compose.yml up -d
+	podman compose -f compose.yaml up -d
 
 down:
-	podman compose -f src/docker-compose.yml down
+	podman compose -f compose.yaml down
 
 logs:
-	podman compose -f src/docker-compose.yml logs -f
+	podman compose -f compose.yaml logs -f

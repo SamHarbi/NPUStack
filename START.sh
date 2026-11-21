@@ -8,5 +8,5 @@ if ! command -v nix >/dev/null 2>&1; then
 fi
 
 # Run from this script's directory, not the caller's cwd.
-cd "$(dirname "$0")/src"
+cd "$(dirname "$0")"
 exec nix develop

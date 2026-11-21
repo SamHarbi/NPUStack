@@ -12,7 +12,7 @@ cloned this repo somewhere other than `~/npu-llm`, then:
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp src/runner/npustack.service ~/.config/systemd/user/
+cp runner/npustack.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now npustack.service
 ```
