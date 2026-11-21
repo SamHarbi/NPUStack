@@ -7,19 +7,11 @@ Wants=network-online.target
 [Service]
 Type=simple
 # Adjust WorkingDirectory if you cloned the repo somewhere other than
-<<<<<<< HEAD:runner/npustack.service
 # ~/npu-llm.
 WorkingDirectory=%h/npu-llm
 ExecStartPre=/usr/bin/podman compose -f %h/npu-llm/compose.yaml down
 ExecStart=/usr/bin/podman compose -f %h/npu-llm/compose.yaml up
 ExecStop=/usr/bin/podman compose -f %h/npu-llm/compose.yaml down
-=======
-# ~/npu-llm. The compose file lives in src/ until PUB-007 flattens the layout.
-WorkingDirectory=%h/npu-llm/src
-ExecStartPre=/usr/bin/podman compose -f %h/npu-llm/src/docker-compose.yml down
-ExecStart=/usr/bin/podman compose -f %h/npu-llm/src/docker-compose.yml up
-ExecStop=/usr/bin/podman compose -f %h/npu-llm/src/docker-compose.yml down
->>>>>>> origin/pub-003-remove-placeholders:src/runner/npustack.service
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=60
