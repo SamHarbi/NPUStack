@@ -12,7 +12,11 @@ cloned this repo somewhere other than `~/npu-llm`, then:
 
 ```bash
 mkdir -p ~/.config/systemd/user
+<<<<<<< HEAD:runner/README.md
 cp runner/npustack.service ~/.config/systemd/user/
+=======
+cp src/runner/npustack.service ~/.config/systemd/user/
+>>>>>>> origin/pub-003-remove-placeholders:src/runner/README.md
 systemctl --user daemon-reload
 systemctl --user enable --now npustack.service
 ```
