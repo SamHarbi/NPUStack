@@ -1,7 +1,4 @@
-# Pinned base image (PUB-011). Ubuntu 26.04 index digest as published on
-# Docker Hub (resolute-20261024.1); re-resolve before upgrading:
-#   docker buildx imagetools inspect ubuntu:26.04
-ARG BASE_IMAGE=ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c
+ARG BASE_IMAGE=ubuntu:26.04
 FROM ${BASE_IMAGE}
 
 LABEL org.opencontainers.image.description="FastFlowLM runtime environment (built from source)"
@@ -11,17 +8,27 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG UBUNTU_PPA=""
 ARG BACKPORTS=""
 
-# Optional PPA escape hatch (e.g. --build-arg UBUNTU_PPA=ppa:amd-team/xrt).
-# The third-party PPAs previously added unconditionally
-# (lemonade-team/stable, amd-team/xrt) are NOT added by default: upstream
-# FastFlowLM builds against the distro libxrt-dev package.
 # Set up PPA if needed
 RUN if [ -n "$UBUNTU_PPA" ]; then \
         apt update && apt install -y software-properties-common && \
         add-apt-repository -y "$UBUNTU_PPA"; \
     fi
 
+# setup backports if needed
+RUN if [ -n "$BACKPORTS" ]; then \
+        echo "deb http://deb.debian.org/debian $BACKPORTS main" >> /etc/apt/sources.list; \
+        apt update; \
+        apt install -t $BACKPORTS -y libxrt-dev; \
+    fi
+
+# Install all build dependencies
+# Cannot install amdxdna-dkms here, that's a host kernel job
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    && add-apt-repository -y ppa:lemonade-team/stable \
+    && add-apt-repository -y ppa:amd-team/xrt \
+    && apt-get update && apt-get install -y --no-install-recommends \
+    libxrt-npu2 \
     build-essential \
     cargo \
     cmake \
@@ -47,11 +54,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     rustc \
     uuid-dev \
+    curl \
+    zstd \
+    libedit-dev \
+    libxrt-dev \
+    libdrm-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# NOTE: amdxdna-dkms is intentionally NOT installed here. The NPU kernel
-# driver belongs on the host kernel, not inside the container (see README
-# "System Requirements" / PUB-005).
+# The distro's rustc is too old for the tokenizers crate, so CI used to
+# install stable with rustup in every job. Baked in here instead, ahead of the
+# distro toolchain on PATH (whose cargo/rustc packages stay: the .deb's
+# Build-Depends name them). World-writable so a job running as any user can
+# update the registry.
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+        sh -s -- -y --profile minimal --default-toolchain stable --no-modify-path \
+    && chmod -R a+w "$RUSTUP_HOME" "$CARGO_HOME" \
+    && rustc --version
 
 WORKDIR /workspace
 
@@ -62,5 +83,7 @@ COPY ./external/fastflowlm ./upstream/fastflowlm
 COPY ./fastflowlm-build.sh ./fastflowlm-build.sh
 
 RUN chmod +x ./fastflowlm-build.sh && ./fastflowlm-build.sh
+
+ENV PATH="/opt/fastflowlm/bin/:${PATH}"
 
 CMD ["/bin/bash"]

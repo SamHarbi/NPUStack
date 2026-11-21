@@ -4,8 +4,7 @@ Dockerfile and build script in this directory build the FastFlowLM
 server container from source (the `external/fastflowlm` submodule).
 This is the container that runs the FastFlowLM server.
 
-See `../builder/` for the build/push helper, and the top-level
-README for the overall stack.
+See the top-level README for the overall stack.
 
 ## Building
 
@@ -24,6 +23,8 @@ If you cloned without submodules, initialise them first:
 ```bash
 git submodule update --init --recursive
 ```
+
+Ensure githooks are activated to apply patches if applicable
 
 ## Pinned FastFlowLM source
 
@@ -52,13 +53,6 @@ build arg. To upgrade, re-resolve the digest and update the arg:
 docker buildx imagetools inspect ubuntu:26.04
 ```
 
-The third-party PPAs (`lemonade-team/stable`, `amd-team/xrt`) are not
-added by default; pass `--build-arg UBUNTU_PPA=ppa:amd-team/xrt` if
-your NPU runtime needs them. The `amdxdna-dkms` kernel driver is
+The `amdxdna-dkms` kernel driver is
 intentionally not installed in the container — it belongs on the host
 kernel (see top-level README, PUB-005).
-
-## Validation
-
-A clean build from a fresh clone is tracked under PUB-020 and has not
-yet been run in CI (PUB-019).

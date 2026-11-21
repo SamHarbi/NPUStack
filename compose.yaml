@@ -5,71 +5,68 @@
 #   podman compose --profile registry up -d   # also start the local registry
 #
 # Profiles:
-#   (default)  fastflowlm, open-webui, opencode
-#   registry   local container registry (builder workflow only)
+#   (default)  fastflowlm, opencode, squid
 #
 # Networking parity and secrets/env handling are tracked in PUB-010 and
 # PUB-012. The opencode service builds from ./opencode (PUB-025).
+networks:
+  cross_container:
+    driver: bridge
+    internal: true        # no direct egress for app containers
+  egress:
+    driver: bridge        # only squid joins this one, access to host through this
+
+volumes:
+    opencode_workspace:
 
 services:
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   container_name: ollama
-  #   ports:
-  #     - "11434:11434"
-  #   volumes:
-  #     - ./data/ollama_data:/root/.ollama
-  #   restart: unless-stopped
-
   fastflowlm:
-    image: localhost:5000/fastflowlm
+    image: fastflowlm:latest
+    stop_signal: SIGINT
+    read_only: true
     build:
       context: ./fastflowlm/
     container_name: fastflowlm
-    network_mode: host
     group_add:
       - keep-groups
-    environment:
-      - MODEL_1=qwen3.6-moe:35b-a3b
     volumes:
-      - ./data/models:/root/.config/flm
+      - ./data/models:/root/.config/flm:Z
+    tmpfs:
+      - /home/ubuntu/.config/flm
+      - /tmp
     devices:
       - "/dev/kfd:/dev/kfd"
       - "/dev/dri:/dev/dri"
       - "/dev/accel/accel0:/dev/accel/accel0"
+    user: "1000:1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - "52625:52625"
+    environment:
+      # Forward proxy for outbound traffic (model downloads etc.)
+      # Both cases set because different HTTP clients read different ones.
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
+      - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
     command: >
       sh -c "
       whoami &&
       flm validate &&
-      ls -ld /workspace &&
-      echo 'Checking and downloading models...' &&
-      flm pull $$MODEL_1 &&
-      echo 'All models ready! Starting FastFlowLM server...' &&
-      exec flm serve --img-pre-resize 4 --host 0.0.0.0 --port 52625
+      echo 'Starting FastFlowLM server...' &&
+      exec flm serve --socket 20 --q-len 20 --ctx-len 262144 --host 0.0.0.0 --port 52625
       "
-
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:main-slim
-    pull_policy: always
-    container_name: open-webui
-    network_mode: host
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./data/open_webui_data:/app/backend/data
-    environment:
-      # Point WebUI to FLM's OpenAI-compatible server
-      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
-      - OPENAI_API_KEY=dummy-key
-    restart: unless-stopped
-    depends_on:
-      - fastflowlm
+    networks:
+      - cross_container
+    expose:
+      - "52625"
 
   opencode:
     build:
@@ -77,28 +74,56 @@ services:
     image: npustack-opencode-dev:latest
     container_name: opencode
     restart: unless-stopped
-    command: serve --hostname 0.0.0.0 --port 8081
+    command: serve --hostname 0.0.0.0 --port 8080
     working_dir: /workspace
-    network_mode: host
-    ports:
-      - "8081:8081"
+    user: "1000:1000"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    expose:
+      - "8081"
+    env_file:
+      - ./config/secrets.env
     environment:
-      - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
-      # TODO(PUB-012): move to .env, do not commit a real key.
+      - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1   # was host.docker.internal, see notes
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key}
+      # Forward proxy for outbound traffic (model downloads etc.)
+      # Both cases set because different HTTP clients read different ones.
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
+      - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
     volumes:
-      - ./workspace:/workspace
-      - ./data/opencode-config:/root/.config/opencode
-      - ./data/opencode-share:/root/.local/share/opencode
+      - opencode_workspace:/workspace:rw
+      - ./config/opencode.json:/workspace/.config/opencode/opencode.json
+      - ./data/opencode-share:/root/.local/share/opencode:rw
+    networks:
+      - cross_container
 
-  registry:
-    image: docker.io/library/registry:2
-    container_name: local-registry
-    profiles: ["registry"]
+  squid:
+    image: ubuntu/squid:latest
+    container_name: squid
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=128m
+      - /var/log/squid:rw,noexec,nosuid,size=128m
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "5000:5000"
-    environment:
-      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
+      - "${HTTP_PORT:-8080}:3080"       # reverse-proxy listener only
     volumes:
-      - ./data/registry_data:/var/lib/registry:Z
-    restart: always
+      - ./config/squid.conf:/etc/squid/squid.conf:ro
+    networks:
+      - cross_container   # talks to apps, serves fastflowlm's proxy requests
+      - egress            # outbound internet access

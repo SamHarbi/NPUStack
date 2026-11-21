@@ -1,6 +1,11 @@
 #!/bin/sh
 set -eu
 
+# !!!
+# This script is meant to be ran in the container during build time. 
+# Do not run it yourself on host!
+# !!!
+
 # FastFlowLM's CMake source directory inside the pinned submodule.
 SRC_DIR="${SRC_DIR:-/workspace/upstream/fastflowlm/src}"
 
@@ -13,4 +18,4 @@ fi
 cd "$SRC_DIR"
 cmake --preset linux-default
 cmake --build build -j"$(nproc)"
-cmake --install build
+cd build && cmake --install .
