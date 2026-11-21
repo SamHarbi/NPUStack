@@ -1,18 +1,13 @@
-<!-- <p align="center">
-  <img src="./logo.svg" alt="NPU-Flux Logo" width="100"/>
-</p> -->
+<p align="center">
+  <img src="logo.svg" alt="NPUStack logo" width="60%">
+</p>
 
-<!-- <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cpu" viewBox="0 0 16 16">
-  <path d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0m-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
-</svg> -->
-
-
-# StackedNPU: AMD XDNA Local LLM Container Stack
+# NPUStack: AMD XDNA Local LLM Container Stack
 
 <p align="center">
-  <img src="showcase.png" width="50%" alt="NPU-Flux + Aider working on this repo">
+  <img src="showcase.png" width="50%" alt="NPUStack + Aider working on this repo">
   <br>
-  <em>Qwen3.5:9b working on this repo via Aider enabled Agentic/Vibe Coding on NPU-Flux</em>
+  <em>Qwen3.5:9b working on this repo via Aider enabled Agentic/Vibe Coding on NPUStack</em>
 </p>
 
 
@@ -21,12 +16,12 @@ High-performance, containerized deployment of FastFlowLM and other accompanying 
 
 - **High power efficiency and background friendly:** All inference runs entirely on an NPU, without ever touching a CPU nor GPU, Keeps the system responsive with a minimal effect on power draw (subject to RAM constraints).
 - **Linux first, secure containerized deployment:** I run Debian, so stability is a priority. Containerization keeps deployment decoupled and provides a layer of isolation from agents, avoiding unintended accidents.
-- **Bleeding-edge, Frontier AI:** NPU-Flux tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
-- **Open Source focus:** Every component of NPU-Flux is open source, supporting my personal learning journey in managing software with the opportunity of contributing back to AI development.
+- **Bleeding-edge, Frontier AI:** NPUStack tracks and builds the main branch of FastFlowLM, I can quickly deploy the latest models as soon as they're supported on AMD hardware.
+- **Open Source focus:** Every component of NPUStack is open source, supporting my personal learning journey in managing software with the opportunity of contributing back to AI development.
 <!-- - **AI in a box**: I specifically designed this as an all-in-one wrapper for all of my AI needs. Which allows me to easily debug and deploy new things on top for experimental testing. -->
 
 <!-- ## Project Context
-NPU-Flux is not FastFlowLM itself, but rather a deployment solution built to run it efficiently on AMD hardware. It wraps the official FastFlowLM binary (sourced via git submodule) within a robust container environment managed by Podman and orchestrated by Nix. This separation allows for easy updates to the underlying runtime while maintaining a consistent deployment interface. -->
+NPUStack is not FastFlowLM itself, but rather a deployment solution built to run it efficiently on AMD hardware. It wraps the official FastFlowLM binary (sourced via git submodule) within a robust container environment managed by Podman and orchestrated by Nix. This separation allows for easy updates to the underlying runtime while maintaining a consistent deployment interface. -->
 
 <!-- ## Features
 - **NPU Acceleration**: Optimized inference using AMD XDNA/NPU hardware via `/dev/accel`.
@@ -42,15 +37,24 @@ NPU-Flux is not FastFlowLM itself, but rather a deployment solution built to run
 - Sufficient RAM and storage for model weights.
 
 ### Software & OS
-- **OS**: Linux and Windows only. MacOS is unsupported (See Kernel requirement). I mainly test this project on Debian.
-- **Kernel**: If on Linux: Version 7.0+ required to include the `amdxdna` driver. Older kernels may require backports or manual driver installation. Windows 11 supports all needed drivers out of the box.
+- **OS**: Linux only for now. MacOS is unsupported (See Kernel requirement). Windows / WSL2 is out of scope for this release — see #23. I mainly test this project on Debian.
+- **Kernel**: If on Linux: Version 7.0+ required to include the `amdxdna` driver. Older kernels may require backports or manual driver installation.
 - **Runtime (Optional)**: Podman will be automatically installed using Nix if using included .sh start scripts, otherwise need to source your own installation of a container engine (i.e Docker, Podman).
 
 ## Quick Start Guide
-Ensure you have Docker installed and run:
-```
-docker run -d -p 8080:80 --name StackedNPU_Instance StackedNPU
-```
+
+### Container Image (Docker Hub)
+
+> [!NOTE]
+> TODO (owner to verify): No public container image is published yet. This section is a placeholder for the Docker Hub release state.
+> - Image name: TBD
+> - Tags: TBD
+> - Published: No
+>
+> Once published, the intended one-liner will be documented here, e.g.:
+> ```bash
+> docker run -d -p 8080:80 --name NPUStack_Instance <image>
+> ```
 
 ## In-depth Start Guide (i.e: For Debian, Arch)
 ### 1. Firmware Installation
@@ -109,6 +113,34 @@ For deploying to a remote server environment (as hinted by the `Makefile` and `/
    su - server
    podman-compose --podman-pull-args="--tls-verify=false" up -d
    ```
+
+## Supported Models
+
+> [!NOTE]
+> TODO (owner to verify): Model availability and specs change upstream. The tags below are the models referenced in this repo; check the upstream catalog for the authoritative list.
+
+The model tags used in this repo (e.g. `qwen3.6-moe:35b-a3b`, `qwen3.5:9b`) are real FastFlowLM model tags. For authoritative model specs, quantization, context window, and recommended memory, see the upstream FastFlowLM model catalog:
+
+- [FastFlowLM model specs / catalog](https://github.com/ROCm/FastFlowLM/blob/main/docs/models.md)
+
+## Benchmarking Performance
+
+> [!NOTE]
+> TODO (owner to verify / fill in): No benchmarks for this stack are published yet. Fill in the table below with reproducible results, and link the upstream reference for comparison.
+
+Upstream reference:
+
+- [FastFlowLM benchmarks](https://github.com/ROCm/FastFlowLM/blob/main/docs/benchmarks.md)
+
+Guidelines for entries:
+
+- Record hardware (CPU / NPU model), kernel, NPU firmware, and FastFlowLM version/commit.
+- Record model + quantization, context length, and prompt / workload.
+- Report decode (tokens/s) and prefill (tokens/s) separately where available.
+
+| Model | Hardware / NPU | Context | Decode (tok/s) | Prefill (tok/s) | Notes |
+|---|---|---|---|---|---|
+| TBD | TBD | TBD | TBD | TBD | TBD |
 
 ## Configuration Details
 
