@@ -1,8 +1,10 @@
-models
-ollama_data
-open_webui_data
-registry_data
+data/models
+data/ollama_data
+data/open_webui_data
+data/registry_data
 .aider*
 old
-opencode-config
-opencode-share
+data/opencode-config
+data/opencode-share
+workspace/*
+!workspace/.gitkeep
