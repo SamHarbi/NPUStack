@@ -44,6 +44,9 @@
         },
         "qwen3.8-mtp:27b": {
           "name": "Qwen3.8 27B "
+        },
+        "medgemma1.5:4b": {
+          "name": "Medical Gemma 1.5 4B"
         }
       }
     }
@@ -52,32 +55,5 @@
     "title": {
       "disable": false
     }
-  },
-    "permissions": [
-    {
-      "action": "edit",
-      "resource": "*",
-      "effect": "deny"
-    },
-    {
-      "action": "read",
-      "resource": "*",
-      "effect": "deny"
-    },
-    {
-      "action": "edit",
-      "resource": "~/*",
-      "effect": "allow"
-    },
-    {
-      "action": "read",
-      "resource": "~/*",
-      "effect": "allow"
-    },
-    {
-      "action": "read",
-      "*.env": "deny",
-      "*.env.*": "deny"
-    }
-  ]  
+  }
 }

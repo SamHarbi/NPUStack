@@ -20,44 +20,6 @@ volumes:
     opencode_workspace:
 
 services:
-  # I prefer to keep inference purely on the NPU for power efficiency and better overall response when
-  # multitasking (CPU / GPU not busy with inference), but if your workflow is different- feel free to spin up ollama here too
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   container_name: ollama
-  #   expose:
-  #     - "8082"
-  #   volumes:
-  #     - ./data/ollama_data:/root/.ollama
-  #   restart: unless-stopped
-  # github-mcp-server:
-  #   image: ghcr.io/github/github-mcp-server:latest
-  #   container_name: github-mcp-server
-  #   read_only: true
-  #   user: "1000:1000"
-  #   cap_drop:
-  #     - ALL
-  #   security_opt:
-  #     - no-new-privileges:true
-  #   env_file:
-  #     - ./config/secrets.env
-  #   environment:
-  #     - MCP_SERVERS=github
-  #     - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
-  #     #- GITHUB_TOOLSETS=""
-  #     #- GITHUB_TOOLS="get_file_contents,create_branch,push_files,create_pull_request,pull_request_read"
-  #     - HTTP_PROXY=http://squid:3128
-  #     - HTTPS_PROXY=http://squid:3128
-  #     - http_proxy=http://squid:3128
-  #     - https_proxy=http://squid:3128
-  #     - NO_PROXY=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
-  #     - no_proxy=localhost,127.0.0.1,fastflowlm,open-webui,opencode,github-mcp-server
-  #   networks:
-  #     - cross_container
-  #   expose:
-  #     - "8082"
-  #   command: ["http", "--port", "8082"]
-
   fastflowlm:
     image: fastflowlm:latest
     stop_signal: SIGINT
@@ -105,23 +67,6 @@ services:
       - cross_container
     expose:
       - "52625"
-
-  # open-webui:
-  #   image: ghcr.io/open-webui/open-webui:main-slim
-  #   pull_policy: always
-  #   container_name: open-webui
-  #   expose:
-  #     - "8080"
-  #   volumes:
-  #     - ./data/open_webui_data:/app/backend/data
-  #   environment:
-  #     - OPENAI_API_BASE_URL=http://fastflowlm:52625/v1
-  #     - OPENAI_API_KEY=dummy-key
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - fastflowlm
-  #   networks:
-  #     - cross_container
 
   opencode:
     build:

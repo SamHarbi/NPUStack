@@ -53,8 +53,6 @@ build arg. To upgrade, re-resolve the digest and update the arg:
 docker buildx imagetools inspect ubuntu:26.04
 ```
 
-The third-party PPAs (`lemonade-team/stable`, `amd-team/xrt`) are not
-added by default; pass `--build-arg UBUNTU_PPA=ppa:amd-team/xrt` if
-your NPU runtime needs them. The `amdxdna-dkms` kernel driver is
+The `amdxdna-dkms` kernel driver is
 intentionally not installed in the container — it belongs on the host
 kernel (see top-level README, PUB-005).

@@ -14,9 +14,7 @@ instead of reinstalling OpenCode on a clean base.
 - Base: `ghcr.io/anomalyco/opencode:2.2.6` pinned by tag + digest
   (see the `OPENCODE_IMAGE` build arg in the Dockerfile). Re-resolve
   the digest from the GHCR package page before upgrading.
-- The upstream image is **Alpine-based** (`apk`/musl) and already
-  bundles `bun` and `ripgrep`; the Dockerfile verifies `bun --version`
-  instead of reinstalling it.
+- The upstream image is **Alpine-based** (`apk`/musl).
 
 ## Tools
 

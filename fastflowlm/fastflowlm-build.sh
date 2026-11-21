@@ -3,7 +3,7 @@ set -eu
 
 # !!!
 # This script is meant to be ran in the container during build time. 
-# Do not run it!
+# Do not run it yourself on host!
 # !!!
 
 # FastFlowLM's CMake source directory inside the pinned submodule.
