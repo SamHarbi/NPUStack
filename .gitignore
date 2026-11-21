@@ -6,3 +6,5 @@ data/registry_data
 old
 data/opencode-config
 data/opencode-share
+workspace/*
+!workspace/.gitkeep

@@ -8,8 +8,8 @@
 #   (default)  fastflowlm, open-webui, opencode
 #   registry   local container registry (builder workflow only)
 #
-# Networking parity (host vs bridge), secrets/env handling, and the
-# OpenCode agent-dev image are tracked in PUB-010, PUB-012, and PUB-025.
+# Networking parity and secrets/env handling are tracked in PUB-010 and
+# PUB-012. The opencode service builds from ./opencode (PUB-025).
 
 services:
   # ollama:
@@ -72,17 +72,22 @@ services:
       - fastflowlm
 
   opencode:
-    image: ghcr.io/anomalyco/opencode:latest
+    build:
+      context: ./opencode/
+    image: npustack-opencode-dev:latest
     container_name: opencode
     restart: unless-stopped
     command: serve --hostname 0.0.0.0 --port 8081
+    working_dir: /workspace
     network_mode: host
     ports:
       - "8081:8081"
     environment:
       - OPENAI_API_BASE_URL=http://host.docker.internal:52625/v1
-      - OPENAI_API_KEY=dummy-key
+      # TODO(PUB-012): move to .env, do not commit a real key.
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key}
     volumes:
+      - ./workspace:/workspace
       - ./data/opencode-config:/root/.config/opencode
       - ./data/opencode-share:/root/.local/share/opencode
 
